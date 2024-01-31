@@ -1,7 +1,6 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { emailAddresses } from "@clerk/nextjs/api";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.actions";
 import { clerkClient } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
@@ -56,25 +55,22 @@ export async function POST(req: Request) {
   const { id } = evt.data;
   const eventType = evt.type;
 
-  //!the user is created
+  //!if a new user is created
   if (eventType === "user.created") {
     const { id, email_addresses, image_url, first_name, last_name, username } =
       evt.data;
 
-    //form our new user
     const user = {
       clerkId: id,
       email: email_addresses[0].email_address,
-      username: username!, //indicatin that the user can be null
+      username: username!,
       firstName: first_name,
       lastName: last_name,
       photo: image_url,
     };
 
-    //creating a new db user based on the info we got from the webhook
     const newUser = await createUser(user);
 
-    //making sure the userId is the same as the clerkId in the model
     if (newUser) {
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: {
@@ -86,7 +82,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "OK", user: newUser });
   }
 
-  //!the user is updated
+  //!if a user is updated
   if (eventType === "user.updated") {
     const { id, image_url, first_name, last_name, username } = evt.data;
 
@@ -102,7 +98,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "OK", user: updatedUser });
   }
 
-  //!the user is deleted
+  //!if a user is deleted
   if (eventType === "user.deleted") {
     const { id } = evt.data;
 
