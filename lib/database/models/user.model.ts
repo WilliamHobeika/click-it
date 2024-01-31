@@ -1,4 +1,4 @@
-import { Schema, models, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema({
   clerkId: { type: String, required: true, unique: true },
@@ -9,6 +9,6 @@ const UserSchema = new Schema({
   photo: { type: String, required: true },
 });
 
-const User = models.User || model("User", UserSchema); // first time we call it, it will use the second function since there's no "User" model in the db. later one it will use the first function
+const User = models.User || model("User", UserSchema);
 
 export default User;
