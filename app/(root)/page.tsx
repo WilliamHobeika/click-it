@@ -1,7 +1,19 @@
+import Collection from "@/components/shared/Collection";
 import { Button } from "@/components/ui/button";
+import { getAllEvents } from "@/lib/actions/event.actions";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  //query is the one of the search
+  //category for the category filtering
+  //the rest are for the pagination
+  const events = await getAllEvents({
+    query: "",
+    category: "",
+    page: 1,
+    limit: 6,
+  });
+
   return (
     <>
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
@@ -34,6 +46,16 @@ export default function Home() {
         <div className="flex w-full flex-col gap-5 md:flex-row">
           Search CategoryFilters
         </div>
+
+        <Collection
+          data={events?.data}
+          emptyTitle="No Events Found"
+          emptyStateSubtext="Come back later"
+          collectionType="All_Events"
+          limit={6}
+          page={1}
+          totalPages={2}
+        />
       </section>
     </>
   );
